@@ -1,0 +1,92 @@
+# Environment files
+.env
+.env.local
+.env.*
+!.env.example
+
+# Cache directories
+.cache/
+cache/
+tmp/
+temp/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo 
+
+# Dependencies
+node_modules/
+vendor/
+bower_components/
+
+# Build outputs
+dist/
+build/
+out/
+*.pyc
+__pycache__/
+
+# Log files
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Coverage and test reports
+coverage/
+.coverage
+.nyc_output/
+junit.xml
+test-report/
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Binary files
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Package files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Media and documentation
+*.pdf
+*.doc
+*.docx
+*.ppt
+*.pptx
+*.xls
+*.xlsx
+
+# Local configuration
+config.local.js
+settings.local.json 
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/ 

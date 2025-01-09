@@ -1,0 +1,8 @@
+streamlit
+pandas
+plotly
+pymongo
+python-dotenv
+streamlit-authenticator
+fpdf
+twilio
