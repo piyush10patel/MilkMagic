@@ -60,6 +60,7 @@ def get_farmer_details(name: str) -> Dict:
 # Cache fat rate for 1 hour
 @st.cache_data(ttl=3600)
 def get_fat_rate() -> float:
+    """Get current fat rate from database"""
     db = init_connection()
     if db is not None:
         try:
@@ -183,3 +184,26 @@ def get_farmer(phone):
         except Exception as e:
             st.error(f"Error fetching farmer: {e}")
     return None
+
+def save_fat_rate(rate: float) -> bool:
+    """Save new fat rate to database"""
+    db = init_connection()
+    if db is not None:
+        try:
+            # Update if exists, insert if not
+            db.settings.update_one(
+                {"setting_type": "fat_rate"},
+                {"$set": {
+                    "value": rate,
+                    "updated_at": datetime.now(pytz.UTC)
+                }},
+                upsert=True
+            )
+            # Clear cache
+            if hasattr(get_fat_rate, 'clear_cache'):
+                get_fat_rate.clear_cache()
+            return True
+        except Exception as e:
+            st.error(f"Error saving fat rate: {e}")
+            return False
+    return False
