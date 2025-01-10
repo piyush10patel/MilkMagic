@@ -56,7 +56,53 @@ def main():
         return
     
     if authentication_status:
-        # Rest of your code remains the same...
+        # Show logout button in sidebar
+        with st.sidebar:
+            authenticator.logout("Logout", "sidebar")
+            st.write(f'Welcome *{name}*')
+        
+        # Main content
+        st.title("🥛 Milk Collection Management")
+        
+        # Today's stats
+        st.markdown("### Today's Collection")
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.metric(
+                label="Total Milk Collected",
+                value="125 L",
+                delta="15 L"
+            )
+            
+        with col2:
+            st.metric(
+                label="Average Fat",
+                value="6.5%",
+                delta="0.2%"
+            )
+            
+        with col3:
+            st.metric(
+                label="Total Amount",
+                value="₹4,375",
+                delta="₹525"
+            )
+        
+        # Recent activity
+        st.markdown("### Recent Activity")
+        
+        activity_data = [
+            {"time": datetime.datetime.now().strftime("%H:%M"), "action": "Evening collection recorded for Farmer A"},
+            {"time": (datetime.datetime.now() - datetime.timedelta(hours=1)).strftime("%H:%M"), 
+             "action": "Payment of ₹2,500 made to Farmer B"},
+            {"time": (datetime.datetime.now() - datetime.timedelta(hours=2)).strftime("%H:%M"), 
+             "action": "Morning collection recorded for Farmer C"}
+        ]
+        
+        for activity in activity_data:
+            st.text(f"{activity['time']} - {activity['action']}")
 
 if __name__ == "__main__":
     main()
