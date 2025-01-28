@@ -1,0 +1,10 @@
+credentials:
+  usernames:
+    admin:
+      email: admin@milkmagic.com
+      name: Admin User
+      password: $2b$12$tP/S8Qm7zgjGnwqjwX4xzOWHY1RxP0mABRwQdHAJBqW4kk3ups8RK
+    piyushpatel:
+      email: 6394piyush@gmail.com
+      name: Piyush
+      password: $2b$12$q8uMwgyAGbMeh969nEftiu8uwHReGTKUXmkTbWGVdbQd3Yao/nTxa
