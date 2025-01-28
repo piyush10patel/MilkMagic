@@ -1,17 +1,8 @@
 import os
 from pymongo import MongoClient
-from urllib.parse import quote_plus
-<<<<<<< Updated upstream
 import streamlit as st
-from datetime import datetime, date
-import pytz
-import pymongo
-import ssl
-from functools import lru_cache
-from typing import Dict, List
-
-# Cache the database connection
-=======
+from dotenv import load_dotenv
+from urllib.parse import quote_plus
 import pymongo
 from datetime import datetime, date
 from bson import ObjectId
@@ -50,130 +41,21 @@ import certifi
 load_dotenv()
 
 # Use connection pooling
->>>>>>> Stashed changes
 @st.cache_resource
 def init_connection():
     """Initialize database connection with connection pooling"""
     try:
-<<<<<<< Updated upstream
-        connection_string = st.secrets["mongo"]["connection_string"]
-        
-        # Add SSL options directly in the connection string
-        if "?" in connection_string:
-            connection_string += "&tlsInsecure=true&ssl=true"
-        else:
-            connection_string += "?tlsInsecure=true&ssl=true"
-        
-        client = pymongo.MongoClient(
-            connection_string,
-            serverSelectionTimeoutMS=5000,
-            maxPoolSize=10,
-            minPoolSize=5
-        )
-        
-        # Test the connection
-        client.admin.command('ping')
-=======
         client = MongoClient(
             st.secrets["mongo"]["connection_string"],
             tlsCAFile=certifi.where(),
             maxPoolSize=5,
             minPoolSize=1
         )
->>>>>>> Stashed changes
         return client.milk_collection
     except Exception as e:
         st.error("Database connection failed")
         return None
 
-<<<<<<< Updated upstream
-# Cache farmer list for 5 minutes
-@st.cache_data(ttl=300)
-def get_all_farmers() -> List[Dict]:
-    db = init_connection()
-    if db is not None:
-        try:
-            return list(db.farmers.find().sort("name", 1))
-        except Exception as e:
-            st.error(f"Error fetching farmers: {e}")
-    return []
-
-# Cache farmer details for 5 minutes
-@st.cache_data(ttl=300)
-def get_farmer_details(name: str) -> Dict:
-    db = init_connection()
-    if db is not None:
-        try:
-            return db.farmers.find_one({"name": name})
-        except Exception as e:
-            st.error(f"Error fetching farmer details: {e}")
-    return None
-
-# Cache fat rate for 1 hour
-@st.cache_data(ttl=3600)
-def get_fat_rate() -> float:
-    """Get current fat rate from database"""
-    db = init_connection()
-    if db is not None:
-        try:
-            rate_setting = db.settings.find_one({"setting_type": "fat_rate"})
-            return rate_setting["value"] if rate_setting else 6.5
-        except Exception as e:
-            st.error(f"Error fetching fat rate: {e}")
-            return 6.5
-    return 6.5
-
-# Cache farmer entries for 1 minute
-@st.cache_data(ttl=60)
-def get_farmer_entries(name: str) -> List[Dict]:
-    db = init_connection()
-    if db is not None:
-        try:
-            return list(db.milk_entries.find({
-                "farmer.name": name
-            }).sort("timestamp", -1))
-        except Exception as e:
-            st.error(f"Error fetching farmer entries: {e}")
-    return []
-
-# Cache farmer payments for 1 minute
-@st.cache_data(ttl=60)
-def get_farmer_payments(farmer_name: str, year: int, month: int) -> List[Dict]:
-    db = init_connection()
-    if db is not None:
-        try:
-            return list(db.payments.find({
-                "farmer_name": farmer_name,
-                "year": year,
-                "month": month
-            }).sort("payment_date", -1))
-        except Exception as e:
-            st.error(f"Error fetching payments: {e}")
-    return []
-
-# Write operations don't use caching
-def save_milk_entry(data: Dict) -> bool:
-    db = init_connection()
-    if db is not None:
-        try:
-            collection_date = data["collection"]["date"]
-            if isinstance(collection_date, date):
-                collection_date = datetime.combine(collection_date, datetime.min.time())
-            
-            entry = {
-                "farmer": data["farmer"],
-                "milk": data["milk"],
-                "collection": {
-                    "date": collection_date,
-                    "shift": data["collection"]["shift"]
-                },
-                "timestamp": datetime.now(pytz.UTC)
-            }
-            
-            db.milk_entries.insert_one(entry)
-            # Clear relevant caches
-            get_farmer_entries.clear()
-=======
 # Cache database queries
 @st.cache_data(ttl=300)  # Cache for 5 minutes
 def get_all_farmers():
@@ -250,58 +132,12 @@ def save_milk_entry(entry_data: dict) -> bool:
         try:
             # Insert the entry
             db.milk_entries.insert_one(entry_data)
->>>>>>> Stashed changes
             return True
         except Exception as e:
             st.error(f"Error saving milk entry: {e}")
             return False
     return False
 
-<<<<<<< Updated upstream
-def save_farmer(data: Dict) -> bool:
-    db = init_connection()
-    if db is not None:
-        try:
-            existing_farmer = db.farmers.find_one({
-                "name": data["name"],
-                "father_name": data["father_name"]
-            })
-            
-            if existing_farmer:
-                st.error("Farmer with this name and father's name already exists!")
-                return False
-            
-            db.farmers.insert_one({
-                "name": data["name"],
-                "father_name": data["father_name"],
-                "village": data["village"],
-                "timestamp": datetime.now(pytz.UTC)
-            })
-            # Clear farmer caches
-            get_all_farmers.clear()
-            get_farmer_details.clear()
-            return True
-        except Exception as e:
-            st.error(f"Error saving farmer: {e}")
-            return False
-    return False
-
-def save_payment(data: Dict) -> bool:
-    db = init_connection()
-    if db is not None:
-        try:
-            payment_data = {
-                "farmer_name": data["farmer_name"],
-                "year": data["year"],
-                "month": data["month"],
-                "amount_paid": data["amount_paid"],
-                "payment_date": datetime.now(pytz.UTC),
-                "notes": data.get("notes", "")
-            }
-            db.payments.insert_one(payment_data)
-            # Clear payment cache
-            get_farmer_payments.clear()
-=======
 def get_farmer_entries(farmer_name=None):
     """Get milk entries for a specific farmer or all entries"""
     db = init_connection()
@@ -391,25 +227,12 @@ def save_payment(payment_data: dict) -> bool:
     if db is not None:
         try:
             db.payments.insert_one(payment_data)
->>>>>>> Stashed changes
             return True
         except Exception as e:
             st.error(f"Error saving payment: {e}")
             return False
     return False
 
-<<<<<<< Updated upstream
-def get_farmer(phone):
-    db = init_connection()
-    if db is not None:
-        try:
-            return db.farmers.find_one({"phone": phone})
-        except Exception as e:
-            st.error(f"Error fetching farmer: {e}")
-    return None
-
-def save_fat_rate(rate: float) -> bool:
-=======
 def get_farmer_payments(farmer_name: str, month: int = None, year: int = None):
     """Get payments for a specific farmer with optional month/year filter"""
     db = init_connection()
@@ -430,25 +253,10 @@ def get_farmer_payments(farmer_name: str, month: int = None, year: int = None):
     return []
 
 def save_fat_rate(rate_data: dict) -> bool:
->>>>>>> Stashed changes
     """Save new fat rate to database"""
     db = init_connection()
     if db is not None:
         try:
-<<<<<<< Updated upstream
-            # Update if exists, insert if not
-            db.settings.update_one(
-                {"setting_type": "fat_rate"},
-                {"$set": {
-                    "value": rate,
-                    "updated_at": datetime.now(pytz.UTC)
-                }},
-                upsert=True
-            )
-            # Clear cache
-            if hasattr(get_fat_rate, 'clear_cache'):
-                get_fat_rate.clear_cache()
-=======
             # Check if fat rate already exists
             existing = db.settings.find_one({
                 "setting_type": "fat_rate",
@@ -461,14 +269,11 @@ def save_fat_rate(rate_data: dict) -> bool:
             
             # Insert new fat rate
             db.settings.insert_one(rate_data)
->>>>>>> Stashed changes
             return True
         except Exception as e:
             st.error(f"Error saving fat rate: {e}")
             return False
     return False
-<<<<<<< Updated upstream
-=======
 
 def get_fat_rates():
     """Get all fat rates from database"""
@@ -669,4 +474,3 @@ __all__ = [
     'get_rates',
     'get_current_rate'
 ]
->>>>>>> Stashed changes
